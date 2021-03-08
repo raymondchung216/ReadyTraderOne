@@ -36,6 +36,7 @@
     "PositionLimit": 1000
   },
   "Traders": {
+    "Example": "secret",
     "ASX Bets": "secret",
     "TraderOne": "secret"
   }
