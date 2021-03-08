@@ -1,0 +1,13 @@
+{
+  "Execution": {
+    "Host": "127.0.0.1",
+    "Port": 12345
+  },
+  "Information": {
+    "Interface": "0.0.0.0",
+    "ListenAddress": "239.255.1.1",
+    "Port": 12346
+  },
+  "TeamName": "Example",
+  "Secret": "secret"
+}
