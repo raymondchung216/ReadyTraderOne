@@ -65,7 +65,7 @@ class AutoTrader(BaseAutoTrader):
         prices are reported along with the volume available at each of those
         price levels.
         """
-        if instrument == Instrument.FUTURE:
+        if instrument == Instrument.ETF:
             price_adjustment = - (self.position // LOT_SIZE) * TICK_SIZE_IN_CENTS
             new_bid_price = bid_prices[0] + price_adjustment if bid_prices[0] != 0 else 0
             new_ask_price = ask_prices[0] + price_adjustment if ask_prices[0] != 0 else 0
@@ -78,15 +78,42 @@ class AutoTrader(BaseAutoTrader):
                 self.ask_id = 0
 
             if self.bid_id == 0 and new_bid_price != 0 and self.position < POSITION_LIMIT:
+                # Buy orders [BID]
                 self.bid_id = next(self.order_ids)
                 self.bid_price = new_bid_price
-                self.send_insert_order(self.bid_id, Side.BUY, new_bid_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+
+                # EDIT BELOW
+                print("#############")
+                print(f"Prices {ask_prices}")
+                print(f"Volumes {ask_volumes}")
+                print(f"Highest Volume{max(ask_volumes)}")
+                print(f"Index of highest vol{ask_volumes.index(max(ask_volumes))}")
+                print("#############")
+
+                # self.send_insert_order(self.bid_id, Side.BUY, new_bid_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+                test = sum(ask_volumes[:ask_volumes.index(max(ask_volumes))])
+                test2 = len(ask_volumes[:ask_volumes.index(max(ask_volumes))])
+                if ask_volumes[0] != max(ask_volumes) and test < POSITION_LIMIT - self.position and test2 >= 2:
+                    # buy everything
+                    self.send_insert_order(self.bid_id, Side.BUY, ask_prices[0], ask_volumes[0], Lifespan.GOOD_FOR_DAY)
+                else:
+                    self.send_insert_order(self.bid_id, Side.SELL, ask_prices[0], test, Lifespan.GOOD_FOR_DAY)
+
+                # EDIT ABOVE
                 self.bids.add(self.bid_id)
 
+
             if self.ask_id == 0 and new_ask_price != 0 and self.position > -POSITION_LIMIT:
+                # Sell orders [ASK]
                 self.ask_id = next(self.order_ids)
                 self.ask_price = new_ask_price
-                self.send_insert_order(self.ask_id, Side.SELL, new_ask_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+
+                # EDIT BELOW
+                # self.send_insert_order(self.ask_id, Side.SELL, new_ask_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+                # print(f"SELLING {ask_prices[1]}")
+                # self.send_insert_order(self.ask_id, Side.SELL, ask_prices[-1], 100, Lifespan.GOOD_FOR_DAY)
+
+                # EDIT ABOVE
                 self.asks.add(self.ask_id)
 
     def on_order_filled_message(self, client_order_id: int, price: int, volume: int) -> None:
