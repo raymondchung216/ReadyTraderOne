@@ -1,6 +1,6 @@
 {
   "Engine": {
-    "MarketDataFile": "data/market_data.csv",
+    "MarketDataFile": "data/market_data2.csv",
     "MarketOpenDelay": 5.0,
     "MatchEventsFile": "match_events.csv",
     "ScoreBoardFile": "score_board.csv",
@@ -38,6 +38,7 @@
   "Traders": {
     "Example": "secret",
     "ASX Bets": "secret",
+    "SOBI": "secret",
     "TraderOne": "secret"
   }
 }
