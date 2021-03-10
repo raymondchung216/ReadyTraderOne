@@ -71,11 +71,11 @@ class AutoTrader(BaseAutoTrader):
             new_bid_price = bid_prices[0] + price_adjustment if bid_prices[0] != 0 else 0
             new_ask_price = ask_prices[0] + price_adjustment if ask_prices[0] != 0 else 0
 
-            # get buy vwap
+            # get bid vwap
             total = 0
             for idx, vol in enumerate(bid_volumes):
                 total += vol * bid_prices[idx]
-            buy_vwap = total / sum(bid_volumes)
+            bid_vwap = total / sum(bid_volumes)
 
             # get ask vwap
             total = 0
@@ -94,34 +94,20 @@ class AutoTrader(BaseAutoTrader):
                 self.ask_id = 0
 
             if self.bid_id == 0 and new_bid_price != 0 and self.position < POSITION_LIMIT:
-
-                #self.send_insert_order(self.bid_id, Side.BUY, new_bid_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
-                if abs((ask_vwap - midprice)) > abs((buy_vwap - midprice)):
+                if abs((ask_vwap - midprice)) > abs((bid_vwap - midprice)):
                     self.bid_id = next(self.order_ids)
                     self.bid_price = new_bid_price
-                    # self.send_cancel_order(self.ask_id)
-                    # self.ask_id = 0
                     if self.position + LOT_SIZE < (POSITION_LIMIT - 30):
                         self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                         self.bids.add(self.bid_id)
-                    # else:
-                    #     print("CAPPED")
-
-
 
             if self.ask_id == 0 and new_ask_price != 0 and self.position > -POSITION_LIMIT:
-
-                # self.send_insert_order(self.ask_id, Side.SELL, new_ask_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
-                if (abs(buy_vwap - midprice)) > (abs(ask_vwap - midprice)):
-                    # self.send_cancel_order(self.bid_id)
-                    # self.bid_id = 0
+                if (abs(bid_vwap - midprice)) > (abs(ask_vwap - midprice)):
                     self.ask_id = next(self.order_ids)
                     self.ask_price = new_ask_price
                     if self.position - LOT_SIZE > (-POSITION_LIMIT + 30):
                         self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                         self.asks.add(self.ask_id)
-                    # else:
-                    #     print("CAPPED")
 
 
 
