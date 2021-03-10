@@ -94,7 +94,6 @@ class AutoTrader(BaseAutoTrader):
                 self.ask_id = 0
 
             if self.bid_id == 0 and new_bid_price != 0 and self.position < POSITION_LIMIT:
-<<<<<<< HEAD
 
                 #self.send_insert_order(self.bid_id, Side.BUY, new_bid_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                 if abs((ask_vwap - midprice)) > abs((buy_vwap - midprice)):
@@ -108,21 +107,9 @@ class AutoTrader(BaseAutoTrader):
                     # else:
                     #     print("CAPPED")
 
-=======
-                self.bid_id = next(self.order_ids)
-                self.bid_price = new_bid_price
-                if abs((ask_vwap - midprice)) > abs((buy_vwap - midprice)):
-                    if abs(self.position) + LOT_SIZE < 1000:
-                        # we have space, just buy lot size amount of units
-                        self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
-                    else:
-                        # no space, buy as much as we can without hitting position limit
-                        self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], (POSITION_LIMIT - 1) - self.position, Lifespan.GOOD_FOR_DAY)
->>>>>>> d6bbd26c0093f4a55b0d15e6f1e73a4fc9a1c353
 
 
             if self.ask_id == 0 and new_ask_price != 0 and self.position > -POSITION_LIMIT:
-<<<<<<< HEAD
 
                 # self.send_insert_order(self.ask_id, Side.SELL, new_ask_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                 if (abs(buy_vwap - midprice)) > (abs(ask_vwap - midprice)):
@@ -136,17 +123,6 @@ class AutoTrader(BaseAutoTrader):
                     # else:
                     #     print("CAPPED")
 
-=======
-                self.ask_id = next(self.order_ids)
-                self.ask_price = new_ask_price
-                if (abs(buy_vwap - midprice)) > (abs(ask_vwap - midprice)):
-                    if abs(self.position) + LOT_SIZE < 1000:
-                        # we have space, just sell lot size amount of units
-                        self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
-                    else:
-                        # no space, sell as much as we can without hitting position limit
-                        self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], (POSITION_LIMIT - 1) - self.position, Lifespan.GOOD_FOR_DAY)
->>>>>>> d6bbd26c0093f4a55b0d15e6f1e73a4fc9a1c353
 
 
     def on_order_filled_message(self, client_order_id: int, price: int, volume: int) -> None:
