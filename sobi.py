@@ -23,7 +23,7 @@ from typing import List
 from ready_trader_one import BaseAutoTrader, Instrument, Lifespan, Side
 
 
-LOT_SIZE = 10
+LOT_SIZE = 30
 POSITION_LIMIT = 1000
 TICK_SIZE_IN_CENTS = 100
 
@@ -79,9 +79,12 @@ class AutoTrader(BaseAutoTrader):
             for idx in range(len(ask_volumes)):
                 total += ask_volumes[idx]*ask_prices[idx]
             ask_vwap = total / sum(ask_volumes)
-
             midprice = (bid_prices[0] + ask_prices[0]) / 2
-            # print(midprice)
+            # print(f"buy vwap {buy_vwap}")
+            # print(f"midprice {midprice}")
+            # print(f"sell vwap {ask_vwap}")
+
+            #print(midprice)
             #new code ^
 
             if self.bid_id != 0 and new_bid_price not in (self.bid_price, 0):
@@ -96,9 +99,9 @@ class AutoTrader(BaseAutoTrader):
                 self.bid_price = new_bid_price
                 #self.send_insert_order(self.bid_id, Side.BUY, new_bid_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                 if abs((ask_vwap - midprice)) > abs((buy_vwap - midprice)):
-                    self.send_cancel_order(self.ask_id)
-                    self.ask_id = 0
-                    self.send_insert_order(self.bid_id, Side.BUY, new_bid_price, 20, Lifespan.GOOD_FOR_DAY)
+                    # self.send_cancel_order(self.ask_id)
+                    # self.ask_id = 0
+                    self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
 
                 self.bids.add(self.bid_id)
 
@@ -107,9 +110,9 @@ class AutoTrader(BaseAutoTrader):
                 self.ask_price = new_ask_price
                 # self.send_insert_order(self.ask_id, Side.SELL, new_ask_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                 if (abs(buy_vwap - midprice)) > (abs(ask_vwap - midprice)):
-                    self.send_cancel_order(self.bid_id)
-                    self.bid_id = 0
-                    self.send_insert_order(self.ask_id, Side.SELL, new_ask_price, 20, Lifespan.GOOD_FOR_DAY)
+                    # self.send_cancel_order(self.bid_id)
+                    # self.bid_id = 0
+                    self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                 self.asks.add(self.ask_id)
 
     def on_order_filled_message(self, client_order_id: int, price: int, volume: int) -> None:
@@ -144,3 +147,4 @@ class AutoTrader(BaseAutoTrader):
             # It could be either a bid or an ask
             self.bids.discard(client_order_id)
             self.asks.discard(client_order_id)
+#F: && cd linux\optiver\ReadyTraderOne && "C:\Users\Windows 10\AppData\Local\Programs\Python\Python39\python.exe" rto.py run sobi.py
