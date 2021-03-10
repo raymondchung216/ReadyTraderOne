@@ -101,7 +101,10 @@ class AutoTrader(BaseAutoTrader):
                 if abs((ask_vwap - midprice)) > abs((buy_vwap - midprice)):
                     # self.send_cancel_order(self.ask_id)
                     # self.ask_id = 0
-                    self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+                    if abs(self.position) + LOT_SIZE < 1000:
+                        self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+                    else:
+                        self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], (POSITION_LIMIT - 1) - self.position, Lifespan.GOOD_FOR_DAY)
 
                 self.bids.add(self.bid_id)
 
@@ -112,7 +115,11 @@ class AutoTrader(BaseAutoTrader):
                 if (abs(buy_vwap - midprice)) > (abs(ask_vwap - midprice)):
                     # self.send_cancel_order(self.bid_id)
                     # self.bid_id = 0
-                    self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+                    if abs(self.position) + LOT_SIZE < 1000:
+                        self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+                    else:
+                        self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], (POSITION_LIMIT - 1) - self.position, Lifespan.GOOD_FOR_DAY)
+
                 self.asks.add(self.ask_id)
 
     def on_order_filled_message(self, client_order_id: int, price: int, volume: int) -> None:
