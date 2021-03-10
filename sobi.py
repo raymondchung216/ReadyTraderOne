@@ -143,4 +143,3 @@ class AutoTrader(BaseAutoTrader):
             # It could be either a bid or an ask
             self.bids.discard(client_order_id)
             self.asks.discard(client_order_id)
-#F: && cd linux\optiver\ReadyTraderOne && "C:\Users\Windows 10\AppData\Local\Programs\Python\Python39\python.exe" rto.py run sobi.py

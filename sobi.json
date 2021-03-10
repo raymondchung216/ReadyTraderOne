@@ -8,6 +8,6 @@
     "ListenAddress": "239.255.1.1",
     "Port": 12346
   },
-  "TeamName": "SOBI",
-  "Secret": "secret"
+  "TeamName": "ASX_Bets",
+  "Secret": "tendies"
 }
