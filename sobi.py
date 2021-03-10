@@ -95,32 +95,36 @@ class AutoTrader(BaseAutoTrader):
                 self.ask_id = 0
 
             if self.bid_id == 0 and new_bid_price != 0 and self.position < POSITION_LIMIT:
-                self.bid_id = next(self.order_ids)
-                self.bid_price = new_bid_price
+
                 #self.send_insert_order(self.bid_id, Side.BUY, new_bid_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                 if abs((ask_vwap - midprice)) > abs((buy_vwap - midprice)):
+                    self.bid_id = next(self.order_ids)
+                    self.bid_price = new_bid_price
                     # self.send_cancel_order(self.ask_id)
                     # self.ask_id = 0
-                    if abs(self.position) + LOT_SIZE < 1000:
+                    if self.position + LOT_SIZE < (POSITION_LIMIT - 30):
                         self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
-                    else:
-                        self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], (POSITION_LIMIT - 1) - self.position, Lifespan.GOOD_FOR_DAY)
+                        self.bids.add(self.bid_id)
+                    # else:
+                    #     print("CAPPED")
 
-                self.bids.add(self.bid_id)
+
 
             if self.ask_id == 0 and new_ask_price != 0 and self.position > -POSITION_LIMIT:
-                self.ask_id = next(self.order_ids)
-                self.ask_price = new_ask_price
+
                 # self.send_insert_order(self.ask_id, Side.SELL, new_ask_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                 if (abs(buy_vwap - midprice)) > (abs(ask_vwap - midprice)):
                     # self.send_cancel_order(self.bid_id)
                     # self.bid_id = 0
-                    if abs(self.position) + LOT_SIZE < 1000:
+                    self.ask_id = next(self.order_ids)
+                    self.ask_price = new_ask_price
+                    if self.position - LOT_SIZE > (-POSITION_LIMIT + 30):
                         self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
-                    else:
-                        self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], (POSITION_LIMIT - 1) - self.position, Lifespan.GOOD_FOR_DAY)
+                        self.asks.add(self.ask_id)
+                    # else:
+                    #     print("CAPPED")
 
-                self.asks.add(self.ask_id)
+
 
     def on_order_filled_message(self, client_order_id: int, price: int, volume: int) -> None:
         """Called when when of your orders is filled, partially or fully.
