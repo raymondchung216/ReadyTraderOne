@@ -66,30 +66,29 @@ class AutoTrader(BaseAutoTrader):
         price levels.
         """
         if instrument == Instrument.ETF:
+            ### Static Order Book Imbalance (SOBI) Implementation ###
             price_adjustment = - (self.position // LOT_SIZE) * TICK_SIZE_IN_CENTS
             new_bid_price = bid_prices[0] + price_adjustment if bid_prices[0] != 0 else 0
             new_ask_price = ask_prices[0] + price_adjustment if ask_prices[0] != 0 else 0
 
-            # new code
+            # get buy vwap
             total = 0
-            for idx in range(len(bid_volumes)):
-                total += bid_volumes[idx]*bid_prices[idx]
+            for idx, vol in enumerate(bid_volumes):
+                total += vol * bid_prices[idx]
             buy_vwap = total / sum(bid_volumes)
-            total = 0
-            for idx in range(len(ask_volumes)):
-                total += ask_volumes[idx]*ask_prices[idx]
-            ask_vwap = total / sum(ask_volumes)
-            midprice = (bid_prices[0] + ask_prices[0]) / 2
-            # print(f"buy vwap {buy_vwap}")
-            # print(f"midprice {midprice}")
-            # print(f"sell vwap {ask_vwap}")
 
-            #print(midprice)
-            #new code ^
+            # get ask vwap
+            total = 0
+            for idx, vol in enumerate(ask_volumes):
+                total += vol * ask_prices[idx]
+            ask_vwap = total / sum(ask_volumes)
+
+            midprice = (bid_prices[0] + ask_prices[0]) / 2
 
             if self.bid_id != 0 and new_bid_price not in (self.bid_price, 0):
                 self.send_cancel_order(self.bid_id)
                 self.bid_id = 0
+
             if self.ask_id != 0 and new_ask_price not in (self.ask_price, 0):
                 self.send_cancel_order(self.ask_id)
                 self.ask_id = 0
