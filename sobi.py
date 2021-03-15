@@ -29,13 +29,14 @@ TICK_SIZE_IN_CENTS = 100
 
 
 class AutoTrader(BaseAutoTrader):
-    """Example Auto-trader.
+    """ ASX_Bets AutoTrader
+    Implementation of Static Order Book Imbalance (SOBI) order book trading
+    strategy. The bot looks at the volume weighted average prices for
+    bid and ask orders in the order book and determines which side
+    the price will most likely swing to and places an order accordingly.
 
-    When it starts this auto-trader places ten-lot bid and ask orders at the
-    current best-bid and best-ask prices respectively. Thereafter, if it has
-    a long position (it has bought more lots than it has sold) it reduces its
-    bid and ask prices. Conversely, if it has a short position (it has sold
-    more lots than it has bought) then it increases its bid and ask prices.
+    i.e. one side isn't balanced and the price will eventually balance
+    out by moving to the opposite side of the order book
     """
 
     def __init__(self, loop: asyncio.AbstractEventLoop, team_name: str, secret: str):
@@ -66,7 +67,7 @@ class AutoTrader(BaseAutoTrader):
         price levels.
         """
         if instrument == Instrument.ETF:
-            ### Static Order Book Imbalance (SOBI) Implementation ###
+
             price_adjustment = - (self.position // LOT_SIZE) * TICK_SIZE_IN_CENTS
             new_bid_price = bid_prices[0] + price_adjustment if bid_prices[0] != 0 else 0
             new_ask_price = ask_prices[0] + price_adjustment if ask_prices[0] != 0 else 0
