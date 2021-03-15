@@ -1,0 +1,15 @@
+exchange.json
+.vscode/
+__pycache__/
+a1.session.sql
+asx.log
+autotrader.log
+exchange.log
+match_events.csv
+ready_trader_one/__pycache__/
+ready_trader_one/hud/__pycache__/
+ready_trader_one/hud/main_window/__pycache__/
+score_board.csv
+sobi.log
+strategy.txt
+data/
