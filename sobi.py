@@ -23,7 +23,7 @@ from typing import List
 from ready_trader_one import BaseAutoTrader, Instrument, Lifespan, Side
 
 
-LOT_SIZE = 30
+LOT_SIZE = 100
 POSITION_LIMIT = 1000
 TICK_SIZE_IN_CENTS = 100
 
@@ -97,7 +97,7 @@ class AutoTrader(BaseAutoTrader):
                 if abs((ask_vwap - midprice)) > abs((bid_vwap - midprice)):
                     self.bid_id = next(self.order_ids)
                     self.bid_price = new_bid_price
-                    if self.position + LOT_SIZE < (POSITION_LIMIT - 30):
+                    if self.position + LOT_SIZE < (POSITION_LIMIT - LOT_SIZE):
                         self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                         self.bids.add(self.bid_id)
 
@@ -105,7 +105,7 @@ class AutoTrader(BaseAutoTrader):
                 if (abs(bid_vwap - midprice)) > (abs(ask_vwap - midprice)):
                     self.ask_id = next(self.order_ids)
                     self.ask_price = new_ask_price
-                    if self.position - LOT_SIZE > (-POSITION_LIMIT + 30):
+                    if self.position - LOT_SIZE > (-POSITION_LIMIT + LOT_SIZE):
                         self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                         self.asks.add(self.ask_id)
 
