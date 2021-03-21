@@ -23,7 +23,7 @@ from typing import List
 from ready_trader_one import BaseAutoTrader, Instrument, Lifespan, Side
 
 
-LOT_SIZE = 10
+LOT_SIZE = 100
 POSITION_LIMIT = 1000
 TICK_SIZE_IN_CENTS = 100
 
