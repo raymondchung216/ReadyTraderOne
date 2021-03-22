@@ -73,7 +73,7 @@ class AutoTrader(BaseAutoTrader):
             price_adjustment = - (self.position // LOT_SIZE) * TICK_SIZE_IN_CENTS
             new_bid_price = bid_prices[0] + price_adjustment if bid_prices[0] != 0 else 0
             new_ask_price = ask_prices[0] + price_adjustment if ask_prices[0] != 0 else 0
-
+            theta = 1.33
             # get bid vwap
             total = 0
             for idx, vol in enumerate(bid_volumes):
@@ -88,48 +88,50 @@ class AutoTrader(BaseAutoTrader):
 
             midprice = (bid_prices[0] + ask_prices[0]) / 2
 
-            if self.bid_id != 0 and new_bid_price not in (self.bid_price, 0):
+            # print(f"Sobi: {abs((ask_vwap - midprice)) > abs(theta*(bid_vwap - midprice))} num1: {abs((ask_vwap - midprice))} num2: {abs((bid_vwap - midprice))}")
+
+            if self.bid_id != 0 and bid_prices[0] not in (self.bid_price, 0):
                 self.send_cancel_order(self.bid_id)
                 self.bid_id = 0
 
-            if self.ask_id != 0 and new_ask_price not in (self.ask_price, 0):
+            if self.ask_id != 0 and ask_prices[0] not in (self.ask_price, 0):
                 self.send_cancel_order(self.ask_id)
                 self.ask_id = 0
 
 
-            if self.bid_id == 0 and new_bid_price != 0 and self.position < POSITION_LIMIT:
-                if abs((ask_vwap - midprice)) > abs((bid_vwap - midprice)):
+            if self.bid_id == 0 and self.position < POSITION_LIMIT:
+                if abs((ask_vwap - midprice)) > abs(theta*(bid_vwap - midprice)):
                     self.bid_id = next(self.order_ids)
-                    self.bid_price = new_bid_price
+                    self.bid_price = bid_prices[0]
                     if self.position + LOT_SIZE < (POSITION_LIMIT - LOT_SIZE):
-                        self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+                        self.send_insert_order(self.bid_id, Side.BUY, self.bid_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                         self.bids.add(self.bid_id)
 
-            if self.bid_id == 0 and new_bid_price != 0 and self.position < POSITION_LIMIT:
-                if ask_prices[0] < self.last_price:
-                    self.bid_id = next(self.order_ids)
-                    self.bid_price = new_bid_price
-                    if self.position + LOT_SIZE < (POSITION_LIMIT - LOT_SIZE):
-                        self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
-                        self.bids.add(self.bid_id)
+            # if self.bid_id == 0 and new_bid_price != 0 and self.position < POSITION_LIMIT:
+            #     if bid_prices[0] >= self.last_price:
+            #         self.bid_id = next(self.order_ids)
+            #         self.bid_price = new_bid_price
+            #         if self.position + LOT_SIZE < (POSITION_LIMIT - LOT_SIZE):
+            #             self.send_insert_order(self.bid_id, Side.BUY, bid_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+            #             self.bids.add(self.bid_id)
 
-            if self.ask_id == 0 and new_ask_price != 0 and self.position > -POSITION_LIMIT:
-                if (abs(bid_vwap - midprice)) > (abs(ask_vwap - midprice)):
+            if self.ask_id == 0 and self.position > -POSITION_LIMIT:
+                if abs((bid_vwap - midprice)) > abs(theta*(ask_vwap - midprice)):
                     self.ask_id = next(self.order_ids)
-                    self.ask_price = new_ask_price
+                    self.ask_price = ask_prices[0]
                     if self.position - LOT_SIZE > (-POSITION_LIMIT + LOT_SIZE):
-                        self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+                        self.send_insert_order(self.ask_id, Side.SELL, self.ask_price, LOT_SIZE, Lifespan.GOOD_FOR_DAY)
                         self.asks.add(self.ask_id)
 
-            if self.ask_id == 0 and new_ask_price != 0 and self.position > -POSITION_LIMIT:
-                if bid_prices[0] > self.last_price:
-                    self.ask_id = next(self.order_ids)
-                    self.ask_price = new_ask_price
-                    if self.position - LOT_SIZE > (-POSITION_LIMIT + LOT_SIZE):
-                        self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
-                        self.asks.add(self.ask_id)
-            print(f"last price: {self.last_price}")
-            print(f"mid price: {midprice}")
+            # if self.ask_id == 0 and new_ask_price != 0 and self.position > -POSITION_LIMIT:
+            #     if ask_prices[0] <= self.last_price:
+            #         self.ask_id = next(self.order_ids)
+            #         self.ask_price = new_ask_price
+            #         if self.position - LOT_SIZE > (-POSITION_LIMIT + LOT_SIZE):
+            #             self.send_insert_order(self.ask_id, Side.SELL, ask_prices[0], LOT_SIZE, Lifespan.GOOD_FOR_DAY)
+            #             self.asks.add(self.ask_id)
+            # print(f"last price: {self.last_price}")
+            # print(f"mid price: {midprice}")
             self.last_price = midprice
 
 

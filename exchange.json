@@ -1,6 +1,6 @@
 {
   "Engine": {
-    "MarketDataFile": "data/market_data10.csv",
+    "MarketDataFile": "data/tournament_data2.csv",
     "MarketOpenDelay": 5.0,
     "MatchEventsFile": "match_events.csv",
     "ScoreBoardFile": "score_board.csv",
@@ -39,6 +39,7 @@
     "Example": "secret",
     "ASX_Bets": "tendies",
     "Sobi, Reverse Decis 1/2": "tendies",
+    "Reverse,TF": "tendies",
     "Shorting": "secret",
     "TraderOne": "secret"
   }
