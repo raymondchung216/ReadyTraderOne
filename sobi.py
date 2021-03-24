@@ -86,6 +86,9 @@ class AutoTrader(BaseAutoTrader):
 
             midprice = (bid_prices[0] + ask_prices[0]) / 2
 
+            # print(f"Bid_vwap: {bid_vwap}")
+            # print(f"Ask_vwap: {ask_vwap}")
+
             if self.bid_id != 0 and new_bid_price not in (self.bid_price, 0):
                 self.send_cancel_order(self.bid_id)
                 self.bid_id = 0
